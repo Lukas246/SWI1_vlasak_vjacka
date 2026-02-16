@@ -20,6 +20,10 @@ public class TestController {
         instrumentRepository.save(i);
         return "Saved: " + name + " for " + price;
     }
+    @GetMapping("/api/status")
+    public String getStatus() {
+        return "Backend is running!";
+    }
 
     @GetMapping("/api/all")
     public List<Instrument> getAll() {
