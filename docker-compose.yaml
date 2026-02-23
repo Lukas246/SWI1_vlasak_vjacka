@@ -1,0 +1,31 @@
+services:
+  database:
+    image: mariadb:latest
+    container_name: music_store-database
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_secret
+      MYSQL_DATABASE: music_store
+      MYSQL_USER: seller
+      MYSQL_PASSWORD: makeMoney123
+    ports:
+      - "3306:3306"
+    volumes:
+      - music_store_data:/var/lib/mysql
+    networks:
+      - music_store_network
+
+  frontend:
+    image: nginx:alpine
+    container_name: music_store-web
+    restart: always
+    network_mode: "host"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+      - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf
+
+volumes:
+  music_store_data:
+
+networks:
+  music_store_network:
