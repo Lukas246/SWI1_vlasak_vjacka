@@ -1,5 +1,6 @@
 package cz.vlasak_vjacka.backend;
 
+import jakarta.annotation.Nonnull;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import java.util.List;
@@ -17,7 +18,7 @@ public class DataSeeder implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(@Nonnull String... args) {
         System.out.println("🌱 Zahajuji seedování dat...");
 
         // 1. Smazání starých dat (POZOR: Instrumenty musí jít první kvůli cizím klíčům)
@@ -26,7 +27,7 @@ public class DataSeeder implements CommandLineRunner {
 
         // 2. Vytvoření testovacího uživatele
         User test = new User();
-        test.username = "Sup Dojížďák";
+        test.username = "SupDojizdak";
         test.email = "sup@dojizdak.cz";
         userRepository.save(test);
 
