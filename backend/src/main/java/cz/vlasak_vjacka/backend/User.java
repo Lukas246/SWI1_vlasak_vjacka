@@ -2,6 +2,8 @@ package cz.vlasak_vjacka.backend;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -19,4 +21,8 @@ public class User {
 
     // Pokud bys chtěl přidat roli (např. ADMIN, USER)
     public String role;
+
+    // Ve třídě User.java
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    public List<Instrument> instruments;
 }
