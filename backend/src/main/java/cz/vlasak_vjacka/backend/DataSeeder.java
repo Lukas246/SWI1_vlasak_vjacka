@@ -26,7 +26,7 @@ public class DataSeeder implements CommandLineRunner {
 
         // 2. Vytvoření testovacího uživatele
         User test = new User();
-        test.username = "Sup Dojížďák";
+        test.username = "SupDojizdak";
         test.email = "sup@dojizdak.cz";
         userRepository.save(test);
 
