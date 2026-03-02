@@ -1,11 +1,11 @@
 package cz.vlasak_vjacka.backend;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -17,22 +17,24 @@ public class UserController {
     @Autowired
     private InstrumentRepository instrumentRepository;
 
-    @GetMapping("/api/users/add")
-    public String addUser(@RequestParam String username, @RequestParam String email) {
-        User u = new User();
-        u.username = username;
-        u.email = email;
-        u.role = "USER";
-
-        if (userRepository.findAll().stream().anyMatch(user -> user.email.equals(email))) {
-            return "Chyba: Email už je v systému!";
+    @PostMapping("/api/users/add")
+    public ResponseEntity<?> addUser(@RequestBody User newUser) {
+        // 1. Validace pomocí getterů
+        if (userRepository.existsByEmail(newUser.getEmail())) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Email už je v systému!"));
         }
-        if (userRepository.findAll().stream().anyMatch(user -> user.username.equals(username))) {
-            return "Chyba: Uživatel s tímto jménem už existuje!";
+        if (userRepository.existsByUsername(newUser.getUsername())) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Uživatelské jméno už je v systému!"));
         }
 
-        userRepository.save(u);
-        return "User " + username + " was successfully created with ID: " + u.id;
+        // 2. Nastavení defaultní role před uložením
+        newUser.setRole("USER");
+
+        // 3. Uložení - ID se vygeneruje automaticky díky @GeneratedValue v entitě
+        User savedUser = userRepository.save(newUser);
+
+        // 4. Vrátíme uložený objekt zpět do Reactu
+        return ResponseEntity.ok(savedUser);
     }
 
     @GetMapping("/api/users/all")
@@ -47,7 +49,7 @@ public class UserController {
 
         if (user != null) {
             // Vrátíme seznam jeho nástrojů
-            return user.instruments;
+            return user.getInstruments();
         }
 
         return null; // Nebo prázdný seznam List.of()
@@ -66,7 +68,7 @@ public class UserController {
         i.owner = user; // Toto nastaví cizí klíč v databázi
 
         instrumentRepository.save(i);
-        return "Nástroj '" + name + "' byl přiřazen uživateli " + user.username;
+        return "Nástroj '" + name + "' byl přiřazen uživateli " + user.getUsername();
     }
 
 
