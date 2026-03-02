@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 public class UserController {
@@ -21,8 +22,17 @@ public class UserController {
         User u = new User();
         u.username = username;
         u.email = email;
+        u.role = "USER";
+
+        if (userRepository.findAll().stream().anyMatch(user -> user.email.equals(email))) {
+            return "Chyba: Email už je v systému!";
+        }
+        if (userRepository.findAll().stream().anyMatch(user -> user.username.equals(username))) {
+            return "Chyba: Uživatel s tímto jménem už existuje!";
+        }
+
         userRepository.save(u);
-        return "User " + username + " was successfully created!";
+        return "User " + username + " was successfully created with ID: " + u.id;
     }
 
     @GetMapping("/api/users/all")
@@ -31,7 +41,7 @@ public class UserController {
     }
 
     @GetMapping("/api/users/my-instruments")
-    public List<Instrument> getUserInstruments(@RequestParam Long userId) {
+    public List<Instrument> getUserInstruments(@RequestParam UUID userId) {
         // Najdeme uživatele
         User user = userRepository.findById(userId).orElse(null);
 
@@ -44,7 +54,7 @@ public class UserController {
     }
 
     @GetMapping("/api/users/add-instrument")
-    public String addInstrumentToUser(@RequestParam Long userId, @RequestParam String name, @RequestParam Double price) {
+    public String addInstrumentToUser(@RequestParam UUID userId, @RequestParam String name, @RequestParam Double price) {
         // Najdeme uživatele
         User user = userRepository.findById(userId).orElse(null);
         if (user == null) return "Chyba: Uživatel s ID " + userId + " neexistuje!";
