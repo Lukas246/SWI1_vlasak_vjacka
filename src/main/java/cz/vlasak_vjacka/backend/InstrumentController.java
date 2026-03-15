@@ -5,10 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api") // Přidá /api před všechny cesty v tomto controlleru
@@ -40,8 +37,9 @@ public class InstrumentController {
 
     // Teď bude dostupná na /api/status
     @GetMapping("/status")
-    public String getStatus() {
-        return "Backend is running!";
+    public Map<String, String> getStatus() {
+        // Vrátíme JSON: {"message": "Backend is running!"}
+        return Collections.singletonMap("message", "Backend is running!");
     }
 
     // Teď bude dostupná na /api/instruments/all (přidal jsem instruments pro přehlednost)

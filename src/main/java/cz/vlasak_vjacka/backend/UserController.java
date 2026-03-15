@@ -63,9 +63,9 @@ public class UserController {
 
         // Vytvoříme a propojíme nástroj
         Instrument i = new Instrument();
-        i.name = name;
-        i.price = price;
-        i.owner = user; // Toto nastaví cizí klíč v databázi
+        i.setName(name);
+        i.setPrice(price);
+        i.setOwner(user); // Toto nastaví cizí klíč v databázi
 
         instrumentRepository.save(i);
         return "Nástroj '" + name + "' byl přiřazen uživateli " + user.getUsername();
