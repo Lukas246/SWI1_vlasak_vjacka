@@ -1,8 +1,8 @@
 package cz.vlasak_vjacka.backend.controller;
 
 import cz.vlasak_vjacka.backend.LoginRequest;
-import cz.vlasak_vjacka.backend.User;
-import cz.vlasak_vjacka.backend.UserRepository;
+import cz.vlasak_vjacka.backend.model.User;
+import cz.vlasak_vjacka.backend.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;

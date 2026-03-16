@@ -1,5 +1,9 @@
-package cz.vlasak_vjacka.backend;
+package cz.vlasak_vjacka.backend.controller;
 
+import cz.vlasak_vjacka.backend.model.Instrument;
+import cz.vlasak_vjacka.backend.model.User;
+import cz.vlasak_vjacka.backend.repository.InstrumentRepository;
+import cz.vlasak_vjacka.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

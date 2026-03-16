@@ -1,7 +1,7 @@
 package cz.vlasak_vjacka.backend.service;
 
-import cz.vlasak_vjacka.backend.User;
-import cz.vlasak_vjacka.backend.UserRepository;
+import cz.vlasak_vjacka.backend.model.User;
+import cz.vlasak_vjacka.backend.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
