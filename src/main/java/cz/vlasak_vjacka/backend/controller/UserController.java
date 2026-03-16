@@ -1,5 +1,9 @@
-package cz.vlasak_vjacka.backend;
+package cz.vlasak_vjacka.backend.controller;
 
+import cz.vlasak_vjacka.backend.model.Instrument;
+import cz.vlasak_vjacka.backend.model.User;
+import cz.vlasak_vjacka.backend.repository.InstrumentRepository;
+import cz.vlasak_vjacka.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -63,9 +67,9 @@ public class UserController {
 
         // Vytvoříme a propojíme nástroj
         Instrument i = new Instrument();
-        i.name = name;
-        i.price = price;
-        i.owner = user; // Toto nastaví cizí klíč v databázi
+        i.setName(name);
+        i.setPrice(price);
+        i.setOwner(user); // Toto nastaví cizí klíč v databázi
 
         instrumentRepository.save(i);
         return "Nástroj '" + name + "' byl přiřazen uživateli " + user.getUsername();
