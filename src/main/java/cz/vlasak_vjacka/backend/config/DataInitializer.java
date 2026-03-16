@@ -43,7 +43,7 @@ public class DataInitializer implements CommandLineRunner {
 
         // 2. Uživatelé
         User sup = createUser("sup", "sup@dojizdak.cz", "TajneHeslo123", "ROLE_ADMIN");
-        User jan = createUser("Jan Novak", "jan@novak.cz", "user123", "ROLE_USER");
+        User jan = createUser("honza", "jan@novak.cz", "honza", "ROLE_USER");
         User ludvig = createUser("Ludvig van B.", "ludvig@classic.de", "beethoven", "ROLE_ADMIN");
         userRepository.saveAll(List.of(sup, jan, ludvig));
 

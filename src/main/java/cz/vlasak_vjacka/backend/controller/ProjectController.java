@@ -5,6 +5,7 @@ import cz.vlasak_vjacka.backend.model.User;
 import cz.vlasak_vjacka.backend.repository.ProjectRepository;
 import cz.vlasak_vjacka.backend.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,14 +24,37 @@ public class ProjectController {
     }
 
     @PostMapping("/{projectId}/add-user/{userId}")
-    public ResponseEntity<?> addUserToProject(@PathVariable String projectId, @PathVariable String userId) {
-        Project project = projectRepository.findById(projectId).orElseThrow();
-        User user = userRepository.findById(UUID.fromString(userId)).orElseThrow();
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> addUserToProject(@PathVariable UUID projectId, @PathVariable UUID userId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Projekt nenalezen"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Uživatel nenalezen"));
 
-        project.addMember(user);
+        // Přidáme uživatele do kolekce projektu
+        project.getMembers().add(user);
+
+        // Uložíme projekt, Hibernate automaticky zapíše do project_members
         projectRepository.save(project);
 
-        return ResponseEntity.ok("Uživatel přidán do projektu");
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{projectId}/remove-user/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> removeUserFromProject(
+            @PathVariable UUID projectId,
+            @PathVariable UUID userId
+    ) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Projekt nenalezen"));
+
+        // Hibernate díky UUID a správně nastavenému equals/hashCode v entitě User
+        // pozná, kterého uživatele má z kolekce vyhodit.
+        project.getMembers().removeIf(user -> user.getId().equals(userId));
+
+        projectRepository.save(project);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/all")
