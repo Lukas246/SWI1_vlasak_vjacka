@@ -1,6 +1,7 @@
 package cz.vlasak_vjacka.backend.controller;
 
 import cz.vlasak_vjacka.backend.LoginRequest;
+import cz.vlasak_vjacka.backend.config.JwtUtil;
 import cz.vlasak_vjacka.backend.model.User;
 import cz.vlasak_vjacka.backend.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +17,12 @@ public class AuthController {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
 
-    public AuthController(PasswordEncoder passwordEncoder, UserRepository userRepository) {
+    public AuthController(PasswordEncoder passwordEncoder, UserRepository userRepository, JwtUtil jwtUtil) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/login")
@@ -38,15 +41,15 @@ public class AuthController {
         // 3. Ověření hesla (raw heslo z požadavku vs hash z DB)
         if (passwordEncoder.matches(password, user.getPassword())) {
 
-            // Tady se později bude generovat skutečný JWT token
-            String dummyToken = "jwt-session-" + java.util.UUID.randomUUID();
+            // Generate JWT token
+            String token = jwtUtil.generateToken(user.getUsername(), user.getRole());
 
             // 4. Vrácení dat, která React potřebuje pro stav aplikace
             return ResponseEntity.ok(Map.of(
                     "message", "Přihlášení úspěšné",
                     "username", user.getUsername(),
                     "role", user.getRole(),
-                    "token", dummyToken
+                    "token", token
             ));
         } else {
             return ResponseEntity.status(401).body(Map.of("error", "Neplatné heslo"));

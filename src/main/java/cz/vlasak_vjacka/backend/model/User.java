@@ -1,6 +1,8 @@
 package cz.vlasak_vjacka.backend.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.HashSet;
 import java.util.List;
@@ -16,12 +18,16 @@ public class User {
     private UUID id; // Změněno na private
 
     @Column(nullable = false, unique = true)
+    @NotBlank(message = "Username cannot be blank")
     private String username;
 
     @Column(nullable = false)
+    @NotBlank(message = "Email cannot be blank")
+    @Email(message = "Email should be valid")
     private String email;
 
     @Column(nullable = false)
+    @NotBlank(message = "Password cannot be blank")
     private String password;
 
     @Column()
