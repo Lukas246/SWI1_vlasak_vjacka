@@ -51,4 +51,30 @@ public class InstrumentController {
     public List<Instrument> getAll() {
         return instrumentRepository.findAll();
     }
+
+    @GetMapping("/instruments/{id}")
+    public ResponseEntity<Instrument> getInstrument(@PathVariable String id) {
+        return instrumentRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/instruments/{id}")
+    public ResponseEntity<Instrument> updateInstrument(@PathVariable String id, @RequestBody Instrument instrument) {
+        if (!instrumentRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        instrument.setId(id);
+        Instrument saved = instrumentRepository.save(instrument);
+        return ResponseEntity.ok(saved);
+    }
+
+    @DeleteMapping("/instruments/{id}")
+    public ResponseEntity<?> deleteInstrument(@PathVariable String id) {
+        if (!instrumentRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        instrumentRepository.deleteById(id);
+        return ResponseEntity.ok().build();
+    }
 }

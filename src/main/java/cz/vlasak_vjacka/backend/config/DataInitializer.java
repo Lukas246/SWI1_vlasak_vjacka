@@ -7,6 +7,7 @@ import cz.vlasak_vjacka.backend.repository.InstrumentRepository;
 import cz.vlasak_vjacka.backend.repository.ProjectRepository;
 import cz.vlasak_vjacka.backend.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Component
+@Profile("!test")
 public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
@@ -45,7 +47,9 @@ public class DataInitializer implements CommandLineRunner {
         User sup = createUser("sup", "sup@dojizdak.cz", "TajneHeslo123", "ROLE_ADMIN");
         User jan = createUser("honza", "jan@novak.cz", "honza", "ROLE_USER");
         User ludvig = createUser("Ludvig van B.", "ludvig@classic.de", "beethoven", "ROLE_ADMIN");
-        userRepository.saveAll(List.of(sup, jan, ludvig));
+        userRepository.save(sup);
+        userRepository.save(jan);
+        userRepository.save(ludvig);
 
         // 3. Projekty
         Project band = new Project();
