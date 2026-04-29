@@ -37,8 +37,13 @@ public class UserController {
             return ResponseEntity.badRequest().body(Map.of("message", "Uživatelské jméno už je v systému!"));
         }
 
-        // 2. Nastavení defaultní role před uložením
-        newUser.setRole("USER");
+        //2. ROLE a take fix s tim problem_role.png
+        if (newUser.getRole() == null || newUser.getRole().trim().isEmpty()) {
+            newUser.setRole("ROLE_USER");
+        }
+        else if (!newUser.getRole().startsWith("ROLE_")) {
+            newUser.setRole("ROLE_" + newUser.getRole().toUpperCase());
+        }
 
         // 3. Šifrování hesla
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
