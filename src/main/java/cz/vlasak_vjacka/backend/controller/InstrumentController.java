@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@RequestMapping("/api") // Přidá /api před všechny cesty v tomto controlleru
+@RequestMapping("/api")
 public class InstrumentController {
 
     @Autowired
@@ -21,7 +21,6 @@ public class InstrumentController {
     @Autowired
     private UserRepository userRepository;
 
-    // Cesta sjednocená s Reactem: /api/users/{userId}/instruments
     @PostMapping("/users/{userId}/instruments")
     public ResponseEntity<?> addInstrument(@PathVariable UUID userId, @RequestBody Instrument newInstrument) {
 
@@ -39,14 +38,11 @@ public class InstrumentController {
         return ResponseEntity.ok(savedInstrument);
     }
 
-    // Teď bude dostupná na /api/status
     @GetMapping("/status")
     public Map<String, String> getStatus() {
-        // Vrátíme JSON: {"message": "Backend is running!"}
         return Collections.singletonMap("message", "Backend is running!");
     }
 
-    // Teď bude dostupná na /api/instruments/all (přidal jsem instruments pro přehlednost)
     @GetMapping("/instruments/all")
     public List<Instrument> getAll() {
         return instrumentRepository.findAll();
@@ -59,15 +55,35 @@ public class InstrumentController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    /*
     @PutMapping("/instruments/{id}")
-    public ResponseEntity<Instrument> updateInstrument(@PathVariable String id, @RequestBody Instrument instrument) {
-        if (!instrumentRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> updateInstrument(@PathVariable String id, @RequestBody Instrument updatedInstrument) {
+
+        Optional<Instrument> existingInstrumentOpt = instrumentRepository.findById(id);
+
+        if (existingInstrumentOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("message", "Nástroj nenalezen!"));
         }
-        instrument.setId(id);
-        Instrument saved = instrumentRepository.save(instrument);
-        return ResponseEntity.ok(saved);
-    }
+
+        Instrument existingInstrument = existingInstrumentOpt.get();
+
+        if (updatedInstrument.getName() != null && !updatedInstrument.getName().trim().isEmpty()) {
+            existingInstrument.setName(updatedInstrument.getName());
+        }
+
+        if (updatedInstrument.getPrice() != null) {
+            existingInstrument.setPrice(updatedInstrument.getPrice());
+        }
+
+        if (updatedInstrument.getDescription() != null) {
+            existingInstrument.setDescription(updatedInstrument.getDescription());
+        }
+
+        Instrument savedInstrument = instrumentRepository.save(existingInstrument);
+
+        return ResponseEntity.ok(savedInstrument);
+    }*/
 
     @DeleteMapping("/instruments/{id}")
     public ResponseEntity<?> deleteInstrument(@PathVariable String id) {

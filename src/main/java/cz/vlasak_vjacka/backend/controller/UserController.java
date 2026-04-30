@@ -5,6 +5,7 @@ import cz.vlasak_vjacka.backend.model.User;
 import cz.vlasak_vjacka.backend.repository.InstrumentRepository;
 import cz.vlasak_vjacka.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -52,6 +54,51 @@ public class UserController {
         User savedUser = userRepository.save(newUser);
 
         // 5. Vrátíme uložený objekt zpět do Reactu
+        return ResponseEntity.ok(savedUser);
+    }
+    @DeleteMapping("/api/users/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable UUID id) {
+        if (!userRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        userRepository.deleteById(id);
+        return ResponseEntity.ok().build();
+    }
+    @PutMapping("/api/users/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable UUID id, @Valid @RequestBody User updatedUser) {
+
+        Optional<User> existingUserOpt = userRepository.findById(id);
+        if (existingUserOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", "Uživatel nenalezen!"));
+        }
+
+        User existingUser = existingUserOpt.get();
+
+        if (!existingUser.getEmail().equals(updatedUser.getEmail()) && userRepository.existsByEmail(updatedUser.getEmail())) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Email už používá někdo jiný!"));
+        }
+
+        if (!existingUser.getUsername().equals(updatedUser.getUsername()) && userRepository.existsByUsername(updatedUser.getUsername())) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Uživatelské jméno už používá někdo jiný!"));
+        }
+
+        existingUser.setUsername(updatedUser.getUsername());
+        existingUser.setEmail(updatedUser.getEmail());
+
+        if (updatedUser.getRole() != null && !updatedUser.getRole().trim().isEmpty()) {
+            if (!updatedUser.getRole().startsWith("ROLE_")) {
+                existingUser.setRole("ROLE_" + updatedUser.getRole().toUpperCase());
+            } else {
+                existingUser.setRole(updatedUser.getRole().toUpperCase());
+            }
+        }
+
+        if (updatedUser.getPassword() != null && !updatedUser.getPassword().trim().isEmpty()) {
+            existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        }
+
+        User savedUser = userRepository.save(existingUser);
+
         return ResponseEntity.ok(savedUser);
     }
 

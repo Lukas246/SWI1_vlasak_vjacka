@@ -24,7 +24,7 @@ public class ProjectController {
     }
 
     @PostMapping("/{projectId}/add-user/{userId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN','EDITOR')")
     public ResponseEntity<?> addUserToProject(@PathVariable UUID projectId, @PathVariable UUID userId) {
         Project project = projectRepository.findById(projectId).orElse(null);
         if (project == null) {
@@ -45,7 +45,7 @@ public class ProjectController {
     }
 
     @PostMapping("/{projectId}/remove-user/{userId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN','EDITOR')")
     public ResponseEntity<?> removeUserFromProject(
             @PathVariable UUID projectId,
             @PathVariable UUID userId
